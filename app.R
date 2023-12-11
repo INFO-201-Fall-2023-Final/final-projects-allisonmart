@@ -37,7 +37,11 @@ ui <- navbarPage(
                       understanding of the role of education in shaping local labor markets and facilitate evidence-based decision-making in 
                       education and workforce development.</p>
                     <p>Explore the interactive pages to further examine trends and compelling data stories.</p>"),
-             HTML("<p>For more details, check out our <a href='#'>full report</a>.</p>")
+             HTML("<p>The Data used for this project was found in two different locations, first theunemployment data sorted by
+             state helps us answer questions about which areas are most affected by unemployment.
+             This ties into our main project which compares the relationship between unemployment and education rates 
+             in certain areas of the United States. Second, this project also uses a data set of college enrollment statistics, broken down state - by - state.
+</p>")
            )
   ),
   
@@ -127,20 +131,21 @@ ui <- navbarPage(
   ),
   
   # Sophie 
-  tabPanel("Pie Chart Sectors",
+  tabPanel("Employment Sectors",
            fluidPage(
              titlePanel("Employment Sectors and Industries by State and Year"),
              sidebarPanel(
                selectInput("selected_state", "Select State", choices = unique(df$State), multiple = FALSE),
-               selectInput("selected_year", "Select Year", choices = unique(df$Year), multiple = FALSE)
-             ),
-             mainPanel(
-               plotOutput("pieChart"),
+               selectInput("selected_year", "Select Year", choices = unique(df$Year), multiple = FALSE),
                HTML("<p>This pie chart visually represents the different sectors of employment in a selected state and year. Through the proportional size of each slice, it provides a clear depiction of how employment is distributed across various sectors.</p>
                       <p>Such data is relevant as it not only helps us understand the overall levels of employment but also offers insight into the types of jobs available in specific areas. This makes pie charts a valuable resource for those studying or working in fields that are impacted by employment trends.</p>
                       <p>By analyzing this data, we can adapt to changing employment needs and make decisions accordingly. The pie chart presents each employment sector as a slice of the whole, with the size of each slice correlating to the percentage of employment in that sector.</p>
                       <p>Notably, the pie charts ability to display data proportionally makes it an effective tool for visualizing the relative amounts of employment in each sector and comparing data between different sectors, providing an overview of the states workforce.</p>
                       <p>For example, it can be used in various ways, such as analyzing changes in employment demand across various industries to help in predicting future employment trends and developing policies or programs aimed at addressing those trends.</p>")
+             ),
+             mainPanel(
+               plotOutput("pieChart"),
+
              )
            )
   ),
@@ -188,17 +193,17 @@ server <- function(input, output) {
     req(input$selected_state, input$selected_year)  # Ensure both inputs are selected
     
     Category <- c(
-      "Arts, Entertainment, Recreation, and Accommodation and Food Services",
-      "Educational Services and Health Care and Social Assistance",
-      "Professional, Scientific, and Management, and Administrative and Waste Management Services",
-      "Finance and Insurance and Real Estate and Rental and Leasing",
+      "Arts, Entertainment, and Food Services",
+      "Educational, Health and Social Assistance",
+      "Professional, Scientific, Industries",
+      "Finance and Insurance",
       "Information",
-      "Transportation and Warehousing and Utilities",
+      "Transportation and Utilities",
       "Retail Trade",
       "Wholesale Trade",
       "Manufacturing",
       "Construction",
-      "Agriculture, Forestry, Fishing and Hunting, and Mining"
+      "Agriculture, Forestry"
     )
     
     values <- c(
@@ -214,19 +219,23 @@ server <- function(input, output) {
       as.numeric(gsub("%", "", selected_state_data()$Construction)),
       as.numeric(gsub("%", "", selected_state_data()$Agriculture..forestry..fishing.and.hunting..and.mining))
     )
-    
+
     # Create a ggplot pie chart
     pie_chart <- ggplot(data.frame(Category, values), aes(x = "", y = values, fill = Category)) +
-      geom_bar(stat = "identity", width = 12, color = "white") +
+      geom_bar(stat = "identity", width = 50, color = "white") +
       coord_polar("y", start = 0) +
       theme_minimal() +
-      theme(legend.position = "right", legend.title = element_blank()) +
-      labs(title = "Sectors of Employment By State", fill = "Category") +
-      theme(axis.title = element_blank(), axis.text = element_blank(), axis.ticks = element_blank())
-    pie_chart <- pie_chart + theme(plot.margin = margin(t = -100, unit = "pt"))
-    
+      theme(legend.position = "left", legend.title = element_blank(), legend.key.height = unit(1, "cm")) +
+      labs(title = "", fill = "Category") +
+      theme(axis.title = element_blank(),
+            axis.text = element_blank(),
+            axis.ticks = element_blank())
+    pie_chart <- pie_chart + theme(plot.margin = margin(t = -30, unit = "pt"))
+
     # Print the ggplot pie chart
     print(pie_chart)
+   
+    
   })
   
   # Allie
